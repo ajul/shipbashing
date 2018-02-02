@@ -8,7 +8,7 @@ public class Ship : MonoBehaviour {
     // User-set properties.
 
     // Pixels per meter. Scales the hull drawing.
-    public float scale = 1.5f;
+    public float scale = 1.0f;
 
     public Hull hull {
         get {
