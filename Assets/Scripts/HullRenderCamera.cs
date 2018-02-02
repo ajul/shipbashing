@@ -5,9 +5,10 @@ using UnityEngine;
 public class HullRenderCamera : MonoBehaviour {
 
     public Material hullMaterial;
-    public ShipConfiguration shipConfiguration;
+    public Ship ship;
 
     private readonly float zHull = 1.0f;
+    private readonly int hullSections = 100;
 
     void OnPostRender() {
 
@@ -18,7 +19,7 @@ public class HullRenderCamera : MonoBehaviour {
 
         GL2.MultMatrix(waterlineTransform);
 
-        GL2.MultMatrix(Matrix4x4.Scale(new Vector3(shipConfiguration.scale, shipConfiguration.scale, shipConfiguration.scale)));
+        GL2.MultMatrix(Matrix4x4.Scale(new Vector3(ship.scale, ship.scale, ship.scale)));
 
         DrawHull();
         DrawSuperstructure();
@@ -29,7 +30,7 @@ public class HullRenderCamera : MonoBehaviour {
     private void DrawHull() {
         GL.PushMatrix();
 
-        Matrix4x4 hullTransform = Matrix4x4.Translate(new Vector3(-0.5f * shipConfiguration.hullLength, 0.0f, 0.0f));
+        Matrix4x4 hullTransform = Matrix4x4.Translate(new Vector3(-0.5f * ship.hull.lengthOverall, 0.0f, 0.0f));
 
         GL2.MultMatrix(hullTransform);
 
@@ -37,17 +38,15 @@ public class HullRenderCamera : MonoBehaviour {
 
         GL.Color(new Color(0.0f, 0.0f, 0.0f, 1.0f));
 
-        float hullHeight = shipConfiguration.HullHeight(0.0f);
+        for (int i = 0; i < hullSections + 1; i++) {
+            float fraction = (float) i / hullSections;
+            float xUpper = fraction * ship.hull.lengthUpperDeck;
+            float xLower = fraction * ship.hull.lengthWaterline + ship.hull.sternHang;
 
-        GL.Vertex3(0.0f, hullHeight, zHull);
-        GL.Vertex3(0.0f, 0.0f, zHull);
+            float y = ship.hull.Height(xUpper);
 
-        for (int i = 0; i < shipConfiguration.hullLength; i++) {
-            float x = i + 1.0f;
-            hullHeight = shipConfiguration.HullHeight(x);
-
-            GL.Vertex3(x, hullHeight, zHull);
-            GL.Vertex3(x, 0.0f, zHull);
+            GL.Vertex3(xUpper, y, zHull);
+            GL.Vertex3(xLower, 0.0f, zHull);
         }
 
         GL.End();
