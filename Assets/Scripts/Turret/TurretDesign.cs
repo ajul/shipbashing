@@ -2,29 +2,46 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Turret {
+public abstract class TurretDesign {
     public abstract float shellSize {
         get;
     }
 
-    public abstract float frontClearance {
+    public abstract float slotSize {
         get;
     }
 
-    public abstract float backClearance {
+    // How much length this turret takes up if it is allowed to superfire.
+    public abstract float slotSizeSuperfiring {
         get;
     }
 
-    // Draw the turret at the current position, atop a barbette of the specified depth.
-    // Origin is at the bottom center of the gunhouse.
-    public abstract void Draw(float barbetteDepth);
+    public abstract float barbetteDepth {
+        get;
+        set;
+    }
+
+    // Draw the turret at the current position.
+    // Origin is at the bottom aft of the slot.
+    public abstract void Draw();
 }
 
-public class DefaultTurret : Turret {
+public class DefaultTurretDesign : TurretDesign {
     // In mm.
     public readonly float _shellSize;
     public override float shellSize {
         get { return _shellSize; }
+    }
+
+    private float _barbetteDepth;
+    public override float barbetteDepth {
+        get {
+            return _barbetteDepth;
+        }
+
+        set {
+            _barbetteDepth = value;
+        }
     }
 
     private const float mmPerInch = 25.4f;
@@ -50,7 +67,7 @@ public class DefaultTurret : Turret {
     
     // Gunhouse length as a fraction of barrel length.
     private const float gunhouseLengthFraction = 1.0f;
-    private const float minGunhouseLength = 3.0f;
+    private const float minGunhouseLength = 5.0f;
     private float gunhouseLength {
         get {
             return Mathf.Max(minGunhouseLength, barrelLength * gunhouseLengthFraction);
@@ -67,19 +84,19 @@ public class DefaultTurret : Turret {
         }
     }
 
-    public override float frontClearance {
+    public override float slotSize {
         get {
-            return barrelLength + 0.5f * barbetteLength;
+            return gunhouseLength + gunhouseHeight + barrelLength;
         }
     }
 
-    public override float backClearance {
+    public override float slotSizeSuperfiring {
         get {
-            return gunhouseLength + gunhouseHeight - 0.5f * barbetteLength;
+            return gunhouseLength + gunhouseHeight;
         }
     }
 
-    public DefaultTurret(float shellSize, bool inInches = false) {
+    public DefaultTurretDesign(float shellSize, bool inInches = false) {
         if (inInches) {
             _shellSize = shellSize * mmPerInch;
         } else {
@@ -87,12 +104,7 @@ public class DefaultTurret : Turret {
         }
     }
 
-    public override void Draw(float barbetteDepth) {
-        GL.PushMatrix();
-
-        Matrix4x4 frontOfBarbette = Matrix4x4.Translate(new Vector3(0.5f * barbetteLength, 0.0f, 0.0f));
-        GL2.MultMatrix(frontOfBarbette);
-
+    public override void Draw() {
         // Barrel.
 
         GL.Begin(GL.TRIANGLE_STRIP);
@@ -100,11 +112,11 @@ public class DefaultTurret : Turret {
 
         float barrelBottom = 0.5f * gunhouseHeight - 0.5f * barrelDiameterRoot;
 
-        GL.Vertex3(-gunhouseHeight, barrelBottom + barrelDiameterRoot, zBarrel);
-        GL.Vertex3(-gunhouseHeight, barrelBottom, zBarrel);
+        GL.Vertex3(gunhouseLength, barrelBottom + barrelDiameterRoot, zBarrel);
+        GL.Vertex3(gunhouseLength, barrelBottom, zBarrel);
 
-        GL.Vertex3(-gunhouseHeight + barrelLength, barrelBottom + barrelDiameterTip, zBarrel);
-        GL.Vertex3(-gunhouseHeight + barrelLength, barrelBottom, zBarrel);
+        GL.Vertex3(gunhouseLength + barrelLength, barrelBottom + barrelDiameterTip, zBarrel);
+        GL.Vertex3(gunhouseLength + barrelLength, barrelBottom, zBarrel);
         GL.End();
 
         // Barbette.
@@ -112,11 +124,11 @@ public class DefaultTurret : Turret {
         GL.Begin(GL.TRIANGLE_STRIP);
         GL.Color(new Color(0.125f, 0.125f, 0.125f));
 
-        GL.Vertex3(-barbetteLength, 0.0f, zBarbette);
-        GL.Vertex3(-barbetteLength, -barbetteDepth, zBarbette);
+        GL.Vertex3(gunhouseHeight + gunhouseLength - barbetteLength, 0.0f, zBarbette);
+        GL.Vertex3(gunhouseHeight + gunhouseLength - barbetteLength, -barbetteDepth, zBarbette);
 
-        GL.Vertex3(0.0f, 0.0f, zBarbette);
-        GL.Vertex3(0.0f, -barbetteDepth, zBarbette);
+        GL.Vertex3(gunhouseHeight + gunhouseLength, 0.0f, zBarbette);
+        GL.Vertex3(gunhouseHeight + gunhouseLength, -barbetteDepth, zBarbette);
 
         GL.End();
 
@@ -124,12 +136,10 @@ public class DefaultTurret : Turret {
 
         GL.Begin(GL.TRIANGLE_STRIP);
         GL.Color(new Color(0.25f, 0.25f, 0.25f));
-        GL.Vertex3(-gunhouseLength, gunhouseHeight, zGunhouse);
-        GL.Vertex3(-gunhouseLength, 0.0f, zGunhouse);
-        GL.Vertex3(-gunhouseHeight, gunhouseHeight, zGunhouse);
-        GL.Vertex3(0.0f, 0.0f, zGunhouse);
+        GL.Vertex3(gunhouseHeight, gunhouseHeight, zGunhouse);
+        GL.Vertex3(gunhouseHeight, 0.0f, zGunhouse);
+        GL.Vertex3(gunhouseLength, gunhouseHeight, zGunhouse);
+        GL.Vertex3(gunhouseHeight + gunhouseLength, 0.0f, zGunhouse);
         GL.End();
-
-        GL.PopMatrix();
     }
 }

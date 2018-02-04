@@ -32,30 +32,30 @@ public class Ship : MonoBehaviour {
     // How tall each floor is (m).
     public float levelHeight = 2.5f;
 
+    private TurretDesign mainBatteryTurretDesign;
+
     public float superstructureLength {
         get {
             float result = 0.0f;
-            Turret turret = new DefaultTurret(shellSize);
-            float turretLength = turret.frontClearance + turret.backClearance;
-            result += turretCount * turretLength;
+            mainBatteryTurretDesign = new DefaultTurretDesign(shellSize);
+            result += turretCount * mainBatteryTurretDesign.slotSize;
             return result;
         }
     }
 
     public void DrawTurrets() {
         // Temporary.
-        Turret turret = new DefaultTurret(shellSize);
+        mainBatteryTurretDesign = new DefaultTurretDesign(shellSize);
 
-        float x = 0.5f * hull.lengthUpperDeck - 0.5f * superstructureLength + turret.backClearance;
+        float x = 0.5f * hull.lengthUpperDeck - 0.5f * superstructureLength;
 
-        float turretLength = turret.frontClearance + turret.backClearance;
         for (int i = 0; i < turretCount; i++) {
             GL.PushMatrix();
             float y = hull.Height(x);
             GL2.MultMatrix(Matrix4x4.Translate(new Vector3(x, y + levelHeight, 1.0f)));
-            turret.Draw(0.5f * y + levelHeight);
+            mainBatteryTurretDesign.Draw();
             GL.PopMatrix();
-            x += turretLength;
+            x += mainBatteryTurretDesign.slotSize;
         }
     }
 }

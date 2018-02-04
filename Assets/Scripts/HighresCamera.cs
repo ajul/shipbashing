@@ -8,10 +8,6 @@ public class HighresCamera : MonoBehaviour {
     public Material hullMaterial;
     public Ship ship;
 
-    private readonly float zHull = 1.0f;
-
-    private readonly int hullSections = 100;
-
     void OnPostRender() {
         hullMaterial.SetPass(0);
 
