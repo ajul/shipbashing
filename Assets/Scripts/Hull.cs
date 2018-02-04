@@ -17,7 +17,7 @@ public class Hull : MonoBehaviour {
     public float lengthUpperDeck {
         get {
             // Temporary factor.
-            return ship.superstructureLength * 1.5f;
+            return ship.topStructureLength * 1.5f;
         }
     }
 
