@@ -71,7 +71,11 @@ namespace Turret {
 
         public override float superfiringHeight {
             get {
-                return gunhouseHeight;
+                if (shellSize >= 140.0f) {
+                    return gunhouseHeight;
+                } else {
+                    return gunhouseHeight * 0.5f;
+                }
             }
         }
 

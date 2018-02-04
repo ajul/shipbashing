@@ -18,6 +18,12 @@ public class Ship : MonoBehaviour {
         }
     }
 
+    public Superstructure superstructure {
+        get {
+            return GetComponentInChildren<Superstructure>();
+        }
+    }
+
     // Main battery.
 
     public GameObject mainBatteryTurretCountSlider;
@@ -65,8 +71,6 @@ public class Ship : MonoBehaviour {
     }
 
     public void DrawTurrets() {
-        // Temporary.
-
         float x = 0.5f * hull.lengthUpperDeck - 0.5f * topStructureLength;
 
         foreach (Turret.Placement placement in mainBatteryTurretConfiguration.GetEnumeratorN(mainBatteryTurretCount)) {
