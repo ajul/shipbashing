@@ -7,11 +7,17 @@ public class Hull : MonoBehaviour {
 
     public float breakAspectRatio = 1.5f;
 
+    public Ship ship {
+        get {
+            return GetComponentInParent<Ship>();
+        }
+    }
+
     // Length measured by the highest deck of the ship.
-    public GameObject lengthUpperDeckSlider;
     public float lengthUpperDeck {
         get {
-            return lengthUpperDeckSlider.GetComponentInChildren<Slider>().value;
+            // Temporary factor.
+            return ship.superstructureLength * 1.5f;
         }
     }
 
@@ -91,5 +97,26 @@ public class Hull : MonoBehaviour {
         }
 
         return result;
+    }
+
+    private readonly int hullSections = 100;
+
+    public void Draw() {
+        GL.Begin(GL.TRIANGLE_STRIP);
+
+        GL.Color(new Color(0.0f, 0.0f, 0.0f, 1.0f));
+
+        for (int i = 0; i < hullSections + 1; i++) {
+            float fraction = (float)i / hullSections;
+            float xUpper = fraction * lengthUpperDeck;
+            float xLower = fraction * lengthWaterline + sternHang;
+
+            float y = Height(xUpper);
+
+            GL.Vertex3(xUpper, y, 0.0f);
+            GL.Vertex3(xLower, 0.0f, 0.0f);
+        }
+
+        GL.End();
     }
 }

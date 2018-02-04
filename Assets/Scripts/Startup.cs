@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Startup : MonoBehaviour {
 
-    public HullRenderCamera hullRenderCamera;
+    public HighresCamera highresCamera;
 
 	// Use this for initialization
 	void Start () {
-        hullRenderCamera.GetComponent<Camera>().Render();
+        highresCamera.GetComponent<Camera>().Render();
     }
 }
