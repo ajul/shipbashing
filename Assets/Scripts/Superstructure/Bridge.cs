@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Straight funnel.
-public class DefaultFunnel : ISuperstructureItem {
+public class DefaultBridge : ISuperstructureItem {
     private float _slotSize;
     public float slotSize {
         get { return _slotSize; }
@@ -11,7 +10,7 @@ public class DefaultFunnel : ISuperstructureItem {
 
     private readonly float height;
 
-    public DefaultFunnel(float length, float height) {
+    public DefaultBridge(float length, float height) {
         _slotSize = length;
         this.height = height;
     }
@@ -27,4 +26,5 @@ public class DefaultFunnel : ISuperstructureItem {
         GL.Vertex3(slotSize, -depth, 1.0f);
         GL.End();
     }
+
 }

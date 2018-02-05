@@ -21,8 +21,7 @@ public class HighresCamera : MonoBehaviour {
         GL2.MultMatrix(hullTransform);
         GL2.MultMatrix(Matrix4x4.Scale(new Vector3(ship.scale, ship.scale, ship.scale)));
 
-        ship.DrawTurrets();
-        ship.hull.Draw();
+        ship.Draw();
 
         GL.PopMatrix();
     }

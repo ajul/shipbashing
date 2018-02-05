@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Straight funnel.
-public class DefaultFunnel : ISuperstructureItem {
+public class DefaultMast : ISuperstructureItem {
     private float _slotSize;
     public float slotSize {
         get { return _slotSize; }
@@ -11,20 +10,17 @@ public class DefaultFunnel : ISuperstructureItem {
 
     private readonly float height;
 
-    public DefaultFunnel(float length, float height) {
+    public DefaultMast(float length, float height) {
         _slotSize = length;
         this.height = height;
     }
 
     public void Draw(float depth) {
+        // Front pole.
         GL.Begin(GL.TRIANGLE_STRIP);
         GL.Color(new Color(0.5f, 0.5f, 0.5f));
-
-        GL.Vertex3(0.0f, 0.0f, 1.0f);
-        GL.Vertex3(0.0f, -depth, 1.0f);
-
-        GL.Vertex3(slotSize, 0.0f, 1.0f);
-        GL.Vertex3(slotSize, -depth, 1.0f);
+        // TODO
         GL.End();
     }
+
 }

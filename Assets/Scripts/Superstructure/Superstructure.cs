@@ -6,6 +6,8 @@ public interface ISuperstructureItem {
     float slotSize {
         get;
     }
+
+    void Draw(float depth);
 }
 
 public class Superstructure : MonoBehaviour {
@@ -21,6 +23,7 @@ public class Superstructure : MonoBehaviour {
         Fore
     }
 
+    // Aft to fore.
     public readonly List<ISuperstructureItem> aftSection = new List<ISuperstructureItem>();
     public readonly List<ISuperstructureItem> midSection = new List<ISuperstructureItem>();
     public readonly List<ISuperstructureItem> foreSection = new List<ISuperstructureItem>();

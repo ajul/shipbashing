@@ -58,11 +58,22 @@ public class Ship : MonoBehaviour {
         }
     }
 
+    public float totalTurretLength {
+        get {
+            return mainBatteryTurretConfiguration.TotalLength(mainBatteryTurretDesign, mainBatteryTurretCount);
+        }
+    }
+
+    public GameObject powerplantLengthMultSlider;
+    public float powerplantLength {
+        get {
+            return powerplantLengthMultSlider.GetComponentInChildren<Slider>().value * totalTurretLength;
+        }
+    }
+
     public float topStructureLength {
         get {
-            float result = 0.0f;
-            result += mainBatteryTurretConfiguration.TotalLength(mainBatteryTurretDesign, mainBatteryTurretCount);
-            return result;
+            return totalTurretLength + powerplantLength;
         }
     }
 
@@ -70,23 +81,60 @@ public class Ship : MonoBehaviour {
         mainBatteryTurretCountSlider.GetComponentInChildren<Slider>().maxValue = mainBatteryTurretConfiguration.placementCount;
     }
 
-    public void DrawTurrets() {
+    public void Draw() {
         float x = 0.5f * hull.lengthUpperDeck - 0.5f * topStructureLength;
 
-        foreach (Turret.Placement placement in mainBatteryTurretConfiguration.GetEnumeratorN(mainBatteryTurretCount)) {
-            GL.PushMatrix();
-            float y = hull.Height(x) + placement.level * mainBatteryTurretDesign.superfiringHeight;
-
-            if (placement.facesForwards) {
-                GL2.MultMatrix(Matrix4x4.Translate(new Vector3(x, y, 1.0f)));
-            } else {
-                GL2.MultMatrix(Matrix4x4.Translate(new Vector3(x + placement.SlotSize(mainBatteryTurretDesign), y, 1.0f)));
-                GL2.MultMatrix(Matrix4x4.Scale(new Vector3(-1.0f, 1.0f, 1.0f)));
+        foreach (Turret.Placement placement in mainBatteryTurretConfiguration.aftTurrets) {
+            if (placement.placementOrder < mainBatteryTurretCount) {
+                DrawTurret(placement, x);
+                x += placement.SlotSize(mainBatteryTurretDesign);
             }
-
-            mainBatteryTurretDesign.Draw(y - 0.5f * hull.Height(x));
-            GL.PopMatrix();
-            x += placement.SlotSize(mainBatteryTurretDesign);
         }
+
+        // TODO: aft structure
+
+        foreach (Turret.Placement placement in mainBatteryTurretConfiguration.qTurrets) {
+            if (placement.placementOrder < mainBatteryTurretCount) {
+                DrawTurret(placement, x);
+                x += placement.SlotSize(mainBatteryTurretDesign);
+            }
+        }
+
+        // TODO: mid structure
+
+        x += powerplantLength;
+
+        foreach (Turret.Placement placement in mainBatteryTurretConfiguration.pTurrets) {
+            if (placement.placementOrder < mainBatteryTurretCount) {
+                DrawTurret(placement, x);
+                x += placement.SlotSize(mainBatteryTurretDesign);
+            }
+        }
+
+        // TODO: fore structure
+
+        foreach (Turret.Placement placement in mainBatteryTurretConfiguration.foreTurrets) {
+            if (placement.placementOrder < mainBatteryTurretCount) {
+                DrawTurret(placement, x);
+                x += placement.SlotSize(mainBatteryTurretDesign);
+            }
+        }
+
+        hull.Draw();
+    }
+
+    public void DrawTurret(Turret.Placement placement, float x) {
+        GL.PushMatrix();
+        float y = hull.Height(x) + placement.level * mainBatteryTurretDesign.superfiringHeight;
+
+        if (placement.facesForwards) {
+            GL2.MultMatrix(Matrix4x4.Translate(new Vector3(x, y, 1.0f)));
+        } else {
+            GL2.MultMatrix(Matrix4x4.Translate(new Vector3(x + placement.SlotSize(mainBatteryTurretDesign), y, 1.0f)));
+            GL2.MultMatrix(Matrix4x4.Scale(new Vector3(-1.0f, 1.0f, 1.0f)));
+        }
+
+        mainBatteryTurretDesign.Draw(y - 0.5f * hull.Height(x));
+        GL.PopMatrix();
     }
 }
